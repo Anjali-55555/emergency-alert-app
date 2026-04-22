@@ -1,16 +1,24 @@
-# emergency_alert_app
+🚨 Emergency Alert App
 
-A new Flutter project.
+A mobile application designed to provide instant emergency alerts and safety assistance. This app enables users to quickly send alerts, share their location, and notify trusted contacts during critical situations.
 
-## Getting Started
+📌 Overview
 
-This project is a starting point for a Flutter application.
+The Emergency Alert App is built to enhance personal safety by allowing users to trigger alerts in real-time. It is especially useful in situations like accidents, medical emergencies, or unsafe environments.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+✨ Features
+🚨 One-Tap Emergency Alert
+Instantly send alerts to predefined contacts.
+📍 Live Location Sharing
+Share real-time location with emergency contacts.
+📱 User-Friendly Interface
+Simple and intuitive UI for quick access during emergencies.
+🔔 Notifications System
+Alerts are delivered instantly to selected users.
+🔐 Secure Data Handling
+Ensures user data is handled safely.
+🛠️ Tech Stack
+Frontend: Flutter
+Backend: Firebase (if used, otherwise remove)
+Database: Firestore / Realtime DB (edit if needed)
+Tools: Git, GitHub
