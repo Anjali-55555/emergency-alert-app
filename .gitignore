@@ -1,3 +1,10 @@
+build/
+.dart_tool/
+.idea/
+windows/
+linux/
+macos/
+*.iml
 # Miscellaneous
 *.class
 *.log
