@@ -146,8 +146,7 @@ class _DashboardTabState extends State<_DashboardTab>
         if (loc != null) {
           _lat = loc['lat'] as double?;
           _lng = loc['lng'] as double?;
-          _locationText =
-              loc['address'] as String? ?? '$_lat, $_lng';
+          _locationText = loc['address'] as String? ?? '$_lat, $_lng';
         } else {
           _locationText = 'Location unavailable — check GPS';
         }
@@ -197,9 +196,7 @@ class _DashboardTabState extends State<_DashboardTab>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Emergency SMS will be sent to ${contacts.length} contact(s):',
-            ),
+            Text('Emergency SMS will be sent to ${contacts.length} contact(s):'),
             const SizedBox(height: 8),
             ...contacts.map((c) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
@@ -264,8 +261,7 @@ class _DashboardTabState extends State<_DashboardTab>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(result.message),
-        backgroundColor:
-            result.success ? Colors.green[700] : Colors.red[700],
+        backgroundColor: result.success ? Colors.green[700] : Colors.red[700],
         duration: const Duration(seconds: 4),
       ),
     );
@@ -280,6 +276,14 @@ class _DashboardTabState extends State<_DashboardTab>
   Widget build(BuildContext context) {
     final hasAlerts = _alertService.missingChildren.isNotEmpty ||
         _alertService.bloodRequests.isNotEmpty;
+
+    // ── Responsive values ───────────────────────────────────────────
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWeb = screenWidth > 600;
+    final sosSize = isWeb ? 160.0 : 180.0;
+    final cardAspectRatio = isWeb ? 4.5 : 1.6;
+    final gridCrossCount = isWeb ? 2 : 2;
+    final contentMaxWidth = isWeb ? 700.0 : double.infinity;
 
     return CustomScrollView(
       slivers: [
@@ -315,190 +319,199 @@ class _DashboardTabState extends State<_DashboardTab>
         ),
 
         SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _LocationCard(
-                  locationText: _locationText,
-                  onRefresh: _loadLocation,
-                ),
-                const SizedBox(height: 20),
-
-                // SOS Button
-                Center(
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      AnimatedBuilder(
-                        animation: _ringAnim,
-                        builder: (_, __) => Container(
-                          width: 200 + (_ringAnim.value * 40),
-                          height: 200 + (_ringAnim.value * 40),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.red.withOpacity(
-                                  (1 - _ringAnim.value) * 0.4),
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                      ),
-                      ScaleTransition(
-                        scale: _sosPulse,
-                        child: GestureDetector(
-                          onTap: _sendSos,
-                          child: Container(
-                            width: 180,
-                            height: 180,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _isSendingAlert
-                                  ? Colors.orange
-                                  : const Color(0xFFD32F2F),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.red.withOpacity(0.4),
-                                  blurRadius: 20,
-                                  spreadRadius: 4,
-                                ),
-                              ],
-                            ),
-                            child: _isSendingAlert
-                                ? const CircularProgressIndicator(
-                                    color: Colors.white, strokeWidth: 3)
-                                : const Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.emergency,
-                                          color: Colors.white, size: 52),
-                                      SizedBox(height: 6),
-                                      Text('SOS',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.w900,
-                                              letterSpacing: 4)),
-                                      Text('TAP TO ALERT',
-                                          style: TextStyle(
-                                              color: Colors.white70,
-                                              fontSize: 11,
-                                              letterSpacing: 1.5)),
-                                    ],
-                                  ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // No contacts warning
-                if (_alertService.contacts.isEmpty)
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    margin: const EdgeInsets.only(bottom: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
-                      border:
-                          Border.all(color: Colors.orange.withOpacity(0.4)),
-                    ),
-                    child: const Row(children: [
-                      Icon(Icons.warning_amber,
-                          color: Colors.orange, size: 18),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'No contacts saved! Go to Contacts tab to add '
-                          'your emergency contact before using SOS.',
-                          style: TextStyle(
-                              fontSize: 12, color: Colors.orange),
-                        ),
-                      ),
-                    ]),
-                  ),
-
-                const Text('Quick Actions',
-                    style: TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 12),
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.6,
+          child: Center(
+            child: ConstrainedBox(
+              // Max width on web so content doesn't stretch too wide
+              constraints: BoxConstraints(maxWidth: contentMaxWidth),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _QuickActionCard(
-                      icon: Icons.child_care,
-                      label: 'Missing Child',
-                      subtitle:
-                          '${_alertService.missingChildren.length} active',
-                      color: const Color(0xFF1565C0),
-                      onTap: () {},
+                    // Location Card
+                    _LocationCard(
+                      locationText: _locationText,
+                      onRefresh: _loadLocation,
                     ),
-                    _QuickActionCard(
-                      icon: Icons.water_drop,
-                      label: 'Blood Needed',
-                      subtitle:
-                          '${_alertService.bloodRequests.length} requests',
-                      color: const Color(0xFFC62828),
-                      onTap: () {},
+                    const SizedBox(height: 20),
+
+                    // SOS Button
+                    Center(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          AnimatedBuilder(
+                            animation: _ringAnim,
+                            builder: (_, __) => Container(
+                              width: sosSize + 20 + (_ringAnim.value * 30),
+                              height: sosSize + 20 + (_ringAnim.value * 30),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.red.withOpacity(
+                                      (1 - _ringAnim.value) * 0.4),
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                          ScaleTransition(
+                            scale: _sosPulse,
+                            child: GestureDetector(
+                              onTap: _sendSos,
+                              child: Container(
+                                width: sosSize,
+                                height: sosSize,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _isSendingAlert
+                                      ? Colors.orange
+                                      : const Color(0xFFD32F2F),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.red.withOpacity(0.4),
+                                      blurRadius: 20,
+                                      spreadRadius: 4,
+                                    ),
+                                  ],
+                                ),
+                                child: _isSendingAlert
+                                    ? const CircularProgressIndicator(
+                                        color: Colors.white, strokeWidth: 3)
+                                    : const Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.emergency,
+                                              color: Colors.white, size: 48),
+                                          SizedBox(height: 4),
+                                          Text('SOS',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 26,
+                                                  fontWeight: FontWeight.w900,
+                                                  letterSpacing: 4)),
+                                          Text('TAP TO ALERT',
+                                              style: TextStyle(
+                                                  color: Colors.white70,
+                                                  fontSize: 10,
+                                                  letterSpacing: 1.5)),
+                                        ],
+                                      ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    _QuickActionCard(
-                      icon: Icons.broadcast_on_personal,
-                      label: 'Broadcast',
-                      subtitle: 'Alert nearby',
-                      color: const Color(0xFFE65100),
-                      onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const BroadcastScreen())),
+                    const SizedBox(height: 20),
+
+                    // No contacts warning
+                    if (_alertService.contacts.isEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              color: Colors.orange.withOpacity(0.4)),
+                        ),
+                        child: const Row(children: [
+                          Icon(Icons.warning_amber,
+                              color: Colors.orange, size: 18),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'No contacts saved! Go to Contacts tab to add '
+                              'your emergency contact before using SOS.',
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.orange),
+                            ),
+                          ),
+                        ]),
+                      ),
+
+                    // Quick Actions
+                    const Text('Quick Actions',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 12),
+                    GridView.count(
+                      crossAxisCount: gridCrossCount,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: cardAspectRatio,
+                      children: [
+                        _QuickActionCard(
+                          icon: Icons.child_care,
+                          label: 'Missing Child',
+                          subtitle:
+                              '${_alertService.missingChildren.length} active',
+                          color: const Color(0xFF1565C0),
+                          onTap: () {},
+                        ),
+                        _QuickActionCard(
+                          icon: Icons.water_drop,
+                          label: 'Blood Needed',
+                          subtitle:
+                              '${_alertService.bloodRequests.length} requests',
+                          color: const Color(0xFFC62828),
+                          onTap: () {},
+                        ),
+                        _QuickActionCard(
+                          icon: Icons.broadcast_on_personal,
+                          label: 'Broadcast',
+                          subtitle: 'Alert nearby',
+                          color: const Color(0xFFE65100),
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const BroadcastScreen())),
+                        ),
+                        _QuickActionCard(
+                          icon: Icons.contacts,
+                          label: 'Contacts',
+                          subtitle: '${_alertService.contacts.length} saved',
+                          color: const Color(0xFF2E7D32),
+                          onTap: () {},
+                        ),
+                      ],
                     ),
-                    _QuickActionCard(
-                      icon: Icons.contacts,
-                      label: 'Contacts',
-                      subtitle: '${_alertService.contacts.length} saved',
-                      color: const Color(0xFF2E7D32),
-                      onTap: () {},
-                    ),
+                    const SizedBox(height: 20),
+
+                    // Active Alerts
+                    if (hasAlerts) ...[
+                      const Text('Active Nearby Alerts',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 12),
+                      ..._alertService.missingChildren.map((a) =>
+                          _AlertSummaryCard(
+                            icon: Icons.child_care,
+                            color: const Color(0xFF1565C0),
+                            title: 'Missing: ${a.childName}, ${a.age}',
+                            subtitle: a.lastSeenLocation,
+                            phone: a.contactNumber,
+                            onCall: () => _callNumber(a.contactNumber),
+                          )),
+                      ..._alertService.bloodRequests.map((r) =>
+                          _AlertSummaryCard(
+                            icon: Icons.water_drop,
+                            color: const Color(0xFFC62828),
+                            title:
+                                '${r.bloodGroup.label} blood — ${r.urgencyLevel.toUpperCase()}',
+                            subtitle: r.hospital,
+                            phone: r.contactNumber,
+                            onCall: () => _callNumber(r.contactNumber),
+                          )),
+                    ],
+                    const SizedBox(height: 20),
                   ],
                 ),
-                const SizedBox(height: 20),
-
-                if (hasAlerts) ...[
-                  const Text('Active Nearby Alerts',
-                      style: TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 12),
-                  ..._alertService.missingChildren.map((a) =>
-                      _AlertSummaryCard(
-                        icon: Icons.child_care,
-                        color: const Color(0xFF1565C0),
-                        title: 'Missing: ${a.childName}, ${a.age}',
-                        subtitle: a.lastSeenLocation,
-                        phone: a.contactNumber,
-                        onCall: () => _callNumber(a.contactNumber),
-                      )),
-                  ..._alertService.bloodRequests.map((r) =>
-                      _AlertSummaryCard(
-                        icon: Icons.water_drop,
-                        color: const Color(0xFFC62828),
-                        title:
-                            '${r.bloodGroup.label} blood — ${r.urgencyLevel.toUpperCase()}',
-                        subtitle: r.hospital,
-                        phone: r.contactNumber,
-                        onCall: () => _callNumber(r.contactNumber),
-                      )),
-                ],
-                const SizedBox(height: 20),
-              ],
+              ),
             ),
           ),
         ),
@@ -512,8 +525,7 @@ class _DashboardTabState extends State<_DashboardTab>
 class _LocationCard extends StatelessWidget {
   final String locationText;
   final VoidCallback onRefresh;
-  const _LocationCard(
-      {required this.locationText, required this.onRefresh});
+  const _LocationCard({required this.locationText, required this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -634,8 +646,7 @@ class _AlertSummaryCard extends StatelessWidget {
         title: Text(title,
             style: const TextStyle(
                 fontWeight: FontWeight.w600, fontSize: 14)),
-        subtitle:
-            Text(subtitle, style: const TextStyle(fontSize: 12)),
+        subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
         trailing: IconButton(
           icon: const Icon(Icons.phone, color: Colors.green),
           onPressed: onCall,
